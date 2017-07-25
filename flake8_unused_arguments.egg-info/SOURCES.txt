@@ -1,0 +1,8 @@
+flake8_unused_arguments/__init__.py
+flake8_unused_arguments/flake8_unused_arguments.py
+flake8_unused_arguments.egg-info/PKG-INFO
+flake8_unused_arguments.egg-info/SOURCES.txt
+flake8_unused_arguments.egg-info/dependency_links.txt
+flake8_unused_arguments.egg-info/entry_points.txt
+flake8_unused_arguments.egg-info/requires.txt
+flake8_unused_arguments.egg-info/top_level.txt

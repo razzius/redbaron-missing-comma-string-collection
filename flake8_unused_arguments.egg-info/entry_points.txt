@@ -1,0 +1,3 @@
+[flake8.extension]
+R101 = flake8_unused_arguments:UnusedArgumentsPlugin
+
