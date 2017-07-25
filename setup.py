@@ -5,20 +5,20 @@ requires = [
 ]
 
 setuptools.setup(
-    name="flake8_unused_arguments",
+    name="flake8_missing_commas_string_collection",
     license="MIT",
     version="0.1.0",
-    description="Warns about unused arguments to a function.",
+    description="Warns about missing commas in a string collection.",
     author="Razzi Abuissa",
     author_email="razzi@abuissa.net",
     url="https://github.com/razzius/flake8-unused-arguments",
     packages=[
-        "flake8_unused_arguments",
+        "flake8_missing_commas",
     ],
     install_requires=requires,
     entry_points={
         'flake8.extension': [
-            'R101 = flake8_unused_arguments:UnusedArgumentsPlugin',
+            'R101 = flake8_missing_commas:MissingCommasPlugin',
         ],
     },
     classifiers=[
