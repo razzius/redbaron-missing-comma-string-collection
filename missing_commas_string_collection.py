@@ -1,6 +1,6 @@
 import sys
 
-from redbaron import RedBaron, ListNode, StringChainNode, SetNode, TupleNode
+from redbaron import AssignmentNode, ListNode, RedBaron, SetNode, StringChainNode, TupleNode
 
 error = 'C101 ElementMissingComma: Implicit string concatenation in collection'
 
@@ -27,6 +27,9 @@ def check_element(element):
 
 
 def statement_missing_comma(statement):
+    if isinstance(statement, AssignmentNode):
+        statement = statement.value
+
     if not isinstance(statement, CONTAINER_NODES):
         return
 
