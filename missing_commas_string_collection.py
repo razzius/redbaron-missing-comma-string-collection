@@ -1,10 +1,38 @@
 import sys
 
-from redbaron import AssignmentNode, ListNode, RedBaron, SetNode, StringChainNode, TupleNode
+from redbaron import (
+    AssignmentNode,
+    AssociativeParenthesisNode,
+    CallArgumentNode,
+    CallNode,
+    ClassNode,
+    CommaProxyList,
+    DefNode,
+    DotProxyList,
+    ForNode,
+    ListNode,
+    ListComprehensionNode,
+    RedBaron,
+    SetNode,
+    StringChainNode,
+    TupleNode,
+    WithNode
+)
 
-error = 'C101 ElementMissingComma: Implicit string concatenation in collection'
 
-CONTAINER_NODES = (ListNode, TupleNode, SetNode)
+error = 'C101 ElementMissingComma: Implicit string concatenation comma-separated expression'
+
+CONTAINER_NODES = (ListNode, TupleNode, SetNode, CallNode)
+
+
+def is_comma_separated(statement):
+    if isinstance(statement, ListComprehensionNode):
+        return False  # todo
+
+    return (
+        isinstance(statement, CONTAINER_NODES)
+        or isinstance(statement.value, (CommaProxyList, DotProxyList))
+    )
 
 
 def format_error(filename, line, column):
@@ -12,6 +40,9 @@ def format_error(filename, line, column):
 
 
 def check_element(element):
+    if isinstance(element, (AssociativeParenthesisNode, CallArgumentNode)):
+        element = element.value
+
     if isinstance(element, StringChainNode):
         bounding_box = element.absolute_bounding_box
         offending_element = element.value[0]
@@ -21,7 +52,7 @@ def check_element(element):
             'column': bounding_box.top_left.column + len(offending_element.value),
         }
 
-    elif isinstance(element, CONTAINER_NODES):
+    elif is_comma_separated(element):
         for element in element.value:
             yield from check_element(element)
 
@@ -30,18 +61,34 @@ def statement_missing_comma(statement):
     if isinstance(statement, AssignmentNode):
         statement = statement.value
 
-    if not isinstance(statement, CONTAINER_NODES):
+    if not is_comma_separated(statement):
         return
 
     for element in statement.value:
         yield from check_element(element)
 
 
+def iterate_through_nodes(fst):
+    for statement in fst:
+        if isinstance(statement, ClassNode):
+            for line in statement.value:
+                if isinstance(line, DefNode):
+                    yield from iterate_through_nodes(line)
+                    # for method_statement in line.value:
+
+        elif isinstance(statement, WithNode):
+            yield from iterate_through_nodes(statement.value)
+        elif isinstance(statement, ForNode):
+            yield from iterate_through_nodes(statement.value)
+        else:
+            yield statement
+
+
 def main(filename):
     with open(filename) as f:
         red = RedBaron(f.read())
 
-    for statement in red:
+    for statement in iterate_through_nodes(red):
         for violation in statement_missing_comma(statement):
             print(format_error(filename, **violation))
 
