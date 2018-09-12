@@ -1,6 +1,7 @@
 import sys
 
 from redbaron import (
+    AssertNode,
     AssignmentNode,
     AssociativeParenthesisNode,
     CallArgumentNode,
@@ -64,7 +65,7 @@ def check_element(element):
 
 
 def statement_missing_comma(statement):
-    if isinstance(statement, AssignmentNode):
+    if isinstance(statement, (AssignmentNode, AssertNode)):
         statement = statement.value
 
     if not is_comma_separated(statement):
