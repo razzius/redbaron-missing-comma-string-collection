@@ -8,6 +8,7 @@ from redbaron import (
     CallNode,
     ClassNode,
     CommaProxyList,
+    ComparisonNode,
     DefNode,
     DictComprehensionNode,
     DictitemNode,
@@ -68,6 +69,11 @@ def check_element(element):
 def statement_missing_comma(statement):
     if isinstance(statement, (AssignmentNode, AssertNode)):
         statement = statement.value
+
+    if isinstance(statement, ComparisonNode):
+        yield from check_element(statement.first)
+        yield from check_element(statement.second)
+        return
 
     if isinstance(statement, DictComprehensionNode):
         yield from check_element(statement.result)
