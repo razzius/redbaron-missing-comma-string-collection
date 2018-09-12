@@ -8,6 +8,7 @@ from redbaron import (
     ClassNode,
     CommaProxyList,
     DefNode,
+    DictitemNode,
     DotProxyList,
     ForNode,
     ListNode,
@@ -52,6 +53,11 @@ def check_element(element):
             'column': bounding_box.top_left.column + len(offending_element.value),
         }
 
+    elif isinstance(element, DictitemNode):
+        yield from check_element(element.key)
+
+        yield from check_element(element.value)
+
     elif is_comma_separated(element):
         for element in element.value:
             yield from check_element(element)
@@ -74,12 +80,10 @@ def iterate_through_nodes(fst):
             for line in statement.value:
                 if isinstance(line, DefNode):
                     yield from iterate_through_nodes(line)
-                    # for method_statement in line.value:
 
-        elif isinstance(statement, WithNode):
+        elif isinstance(statement, (WithNode, ForNode)):
             yield from iterate_through_nodes(statement.value)
-        elif isinstance(statement, ForNode):
-            yield from iterate_through_nodes(statement.value)
+
         else:
             yield statement
 
