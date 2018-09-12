@@ -82,7 +82,7 @@ def iterate_through_nodes(fst):
                 if isinstance(line, DefNode):
                     yield from iterate_through_nodes(line)
 
-        elif isinstance(statement, (WithNode, ForNode)):
+        elif isinstance(statement, (WithNode, ForNode, DefNode)):
             yield from iterate_through_nodes(statement.value)
 
         else:
