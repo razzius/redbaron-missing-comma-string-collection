@@ -9,6 +9,7 @@ from redbaron import (
     ClassNode,
     CommaProxyList,
     DefNode,
+    DictComprehensionNode,
     DictitemNode,
     DotProxyList,
     ForNode,
@@ -24,7 +25,7 @@ from redbaron import (
 
 error = 'C101 ElementMissingComma: Implicit string concatenation comma-separated expression'
 
-CONTAINER_NODES = (ListNode, TupleNode, SetNode, CallNode)
+CONTAINER_NODES = (ListNode, TupleNode, SetNode, CallNode, DictComprehensionNode)
 
 
 def is_comma_separated(statement):
@@ -67,6 +68,10 @@ def check_element(element):
 def statement_missing_comma(statement):
     if isinstance(statement, (AssignmentNode, AssertNode)):
         statement = statement.value
+
+    if isinstance(statement, DictComprehensionNode):
+        yield from check_element(statement.result)
+        return
 
     if not is_comma_separated(statement):
         return
